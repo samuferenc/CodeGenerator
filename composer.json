@@ -5,11 +5,5 @@
             "name": "Ferenc Samu",
             "email": "samu.ferenc.79@gmail.com"
         }
-    ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/samuferenc/codegenerator"
-        }
-    ],
+    ]
 }
