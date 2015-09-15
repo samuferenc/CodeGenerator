@@ -6,13 +6,8 @@ composer.json
 ```
 {
   "require": {
-    "samuferenc/codegenerator": "dev-master",
-    "phpdocumentor/reflection-docblock": "2.0.4",
-    "smarty/smarty": "~3.1"
-  },
-	"autoload": {
-        "psr-4": {"samuferenc\\CodeGenerator\\": ["vendor/samuferenc/codegenerator/src/"]}
-    }
+    "samuferenc/codegenerator": "dev-master"
+  }
 }
 ```
 
