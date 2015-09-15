@@ -1,14 +1,10 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace samuferenc\CodeGenerator\Drivers\SQL;
 
+use samuferenc\CodeGenerator\CodeGenerator;
 use samuferenc\CodeGenerator\Drivers\BaseDriver;
+use samuferenc\CodeGenerator\Element\Type;
 
 /**
  * Description of Driver
@@ -17,22 +13,54 @@ use samuferenc\CodeGenerator\Drivers\BaseDriver;
  */
 class Driver extends BaseDriver
 {
-  const Column = "column";
+  const Column = "Column";
 
-  public function includeGenerator($codeGenerator)
+  public function includeGenerator(CodeGenerator $codeGenerator)
   {
     parent::includeGenerator($codeGenerator);
     $this->codeGenerator->RegistrationParam(self::Column);
   }
 
-  public function CollectData()
+  private function getColumnParams($text)
   {
+    $result = array();
     
+    foreach(explode(',', $text) as $block)
+    {
+      list($key, $value) = explode('=', $block);
+      $result[trim($key)] = trim(trim($value), '"');
+    }
+    
+    return $result;
   }
-
-  public function GenerateCode()
+  
+  public function GenOutput()
   {
-    
-  }
+    $tables = array();
+    foreach($this->codeGenerator->getClasses() as $class)
+    {
+      $columns = array();
+      
+      if ($class->hasChild())
+      {
+        foreach ($class->getChildElements() as $element)
+        {
+          if ($element->getType() == Type::PropertyElement)
+          {
+            $columnText = $element->getAttribute(self::Column);
+            if ($columnText != null)
+            {
+              $column = $this->getColumnParams(substr($columnText, 1, -1));
+              $column['name'] = $element->getName();
+              $columns[] = $column;
+            }                               
+          }          
+        }
+        
+        if (count($columns) > 0)
+          $tables[$class->getName()] = array("name" => $class->getName(), "columns" => $columns);        
+      }
+    }
 
+  }
 }

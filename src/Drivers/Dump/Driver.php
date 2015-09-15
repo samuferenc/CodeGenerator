@@ -3,6 +3,7 @@
 namespace samuferenc\CodeGenerator\Drivers\Dump;
 
 use samuferenc\CodeGenerator\CodeGenerator;
+use samuferenc\CodeGenerator\Element\IElement;
 use samuferenc\CodeGenerator\Drivers\BaseDriver;
 
 /**
@@ -27,7 +28,19 @@ class Driver extends BaseDriver
   {
     foreach($this->codeGenerator->getClasses() as $class)
     {
-      
+      $this->PrintDumpInfo($class);
+    }
+  }
+  
+  private function PrintDumpInfo(IElement $element)  
+  {
+    echo $element->getAttribute(self::DumpInfo) . "\n";
+    if ($element->hasChild())
+    {
+      foreach ($element->getChildElements() as $child)
+      {
+        $this->PrintDumpInfo($child);        
+      }
     }
   }
 

@@ -23,7 +23,7 @@ class Element implements IElement
 
   public function getType()
   {
-    $this->type;
+    return $this->type;
   }
 
   public function getName()
@@ -36,6 +36,9 @@ class Element implements IElement
     return $this->attributes;
   }
 
+  /**
+   * @return arrayOfIElement
+   */  
   public function getChildElements()
   {
     return $this->childElements;
@@ -98,7 +101,7 @@ class Element implements IElement
 
   public function getAttribute($name)
   {
-    return $this->attributes[$name];
+    return isset($this->attributes[$name]) ? $this->attributes[$name] : null;
   }
   
 }
