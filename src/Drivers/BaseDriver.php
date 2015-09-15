@@ -8,34 +8,43 @@
 
 namespace samuferenc\CodeGenerator\Drivers;
 
+use samuferenc\CodeGenerator\CodeGenerator;
 use samuferenc\CodeGenerator\Drivers\IDriver;
+use samuferenc\CodeGenerator\Log;
 
 /**
  * Description of driver
  *
  * @author virtual
  */
-class BaseDriver implements IDriver
+abstract class BaseDriver implements IDriver
 {
-  protected $codeGenerator;
-  
-  public function includeGenerator($codeGenerator)
-  {
-    $this->codeGenerator = $codeGenerator;
-  }  
-  
-  protected $baseDirectory;
 
-  public function setBaseDirectory($directory)
-  {
-    $this->baseDirectory = $directory;
-    return $this;
-  }
+  /** @var array **/
+  protected $config;
   
-  public function Factory()
+  /** @var CodeGenerator **/
+  protected $codeGenerator;
+
+  public function __construct($config)
+  {
+    $this->config = $config;
+  }
+
+  /**
+   * 
+   * @param array $config
+   * @return IDriver
+   */
+  public static function Factory($config = null)
   {
     $classname = get_called_class();
-    return new $classname();    
+    return new $classname($config);
+  }
+
+  public function includeGenerator(CodeGenerator $codeGenerator)
+  {
+    $this->codeGenerator = $codeGenerator;
   }
 
 }

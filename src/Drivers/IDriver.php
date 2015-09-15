@@ -8,17 +8,15 @@
 
 namespace samuferenc\CodeGenerator\Drivers;
 
+use samuferenc\CodeGenerator\CodeGenerator;
+
 /**
  *
  * @author virtual
  */
-interface IDriver {
-  public function includeGenerator($generator);
-  
-  public function setBaseDirectory($directory);
-  
-  public function CollectData();
-  
-  public function GenerateCode();
+interface IDriver
+{
+  public function includeGenerator(CodeGenerator $generator);
 
+  public function GenOutput();
 }

@@ -16,13 +16,13 @@ namespace samuferenc\CodeGenerator;
 class Log
 {
 
-  const Info = "info";
-  const Warning = "warning";
-  const Error = "error";
+  const Info = "INFO";
+  const Warning = "WARNING";
+  const Error = "ERROR";
 
   public static function Debug($message, $level = self::Info)
   {
-    echo sprintf("%s: %s\n", $message, $level);
+    echo sprintf("%s %s\n", $level, $message);
   }
 
   /**
@@ -32,12 +32,7 @@ class Log
    */
   public static function Info($message, $params)
   {
-    $paramCount = func_num_args();
-    if ($paramCount > 1)
-    {
-      $message = vsprintf($message, func_get_args());
-    }
-
+    self::prepareMessage(func_get_args(), $message);
     self::Debug($message, self::Info);
   }  
   
@@ -48,12 +43,7 @@ class Log
    */
   public static function Warning($message, $params)
   {
-    $paramCount = func_num_args();
-    if ($paramCount > 1)
-    {
-      $message = vsprintf($message, func_get_args());
-    }
-
+    self::prepareMessage(func_get_args(), $message);
     self::Debug($message, self::Warning);
   }
 
@@ -64,13 +54,16 @@ class Log
    */
   public static function Error($message, $params)
   {
-    $paramCount = func_num_args();
-    if ($paramCount > 1)
-    {
-      $message = vsprintf($message, func_get_args());
-    }
-
+    self::prepareMessage(func_get_args(), $message);
     self::Debug($message, self::Error);
   }
-
+  
+  private static function prepareMessage($args, &$message)
+  {
+    if (count($args) > 1)
+    {
+      array_shift($args);
+      $message = vsprintf($message, $args);
+    }
+  }
 }

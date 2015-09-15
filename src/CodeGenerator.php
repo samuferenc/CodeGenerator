@@ -3,15 +3,17 @@
 namespace samuferenc\CodeGenerator;
 
 use samuferenc\CodeGenerator\Drivers\IDriver;
+use samuferenc\CodeGenerator\Element\Element;
+use samuferenc\CodeGenerator\Element\Type;
 use samuferenc\CodeGenerator\Log;
-
-
-// Fajlok keresese
-// Template-ek
-// Osszeallitas
+use phpDocumentor\Reflection\DocBlock;
 
 class CodeGenerator
 {
+  /**
+   *
+   * @var ClassInfo[] 
+   */
   private $classes = array();
   private $drivers = array();
   private $registratedParams = array();
@@ -19,6 +21,16 @@ class CodeGenerator
   public function __construct()
   {
     
+  }
+  
+  public static function Factory()
+  {
+    return new self();
+  }
+  
+  public function getClasses()
+  {
+    return $this->classes;  
   }
 
   /**
@@ -31,8 +43,8 @@ class CodeGenerator
     if (empty($filename))
       return $this;
 
-    Log::Info('Load class: %s', $filename);
-    $this->AddClassInfo(ClassInfo::Factory($filename));
+    Log::Info('Load file: %s', $filename);
+    $this->AddClassInfo(ClassInfo::FactoryByFilename($filename));
     return $this;
   }
 
@@ -46,12 +58,12 @@ class CodeGenerator
     if ($classInfo == null) 
       return;
     
-    if (isset($this->classes[$classInfo->fqsen]))
+    if (isset($this->classes[$classInfo->getFQSEN()]))
     {
-      Log::Warning('Already exists class: %s', $classInfo->$fqsen);
+      Log::Warning('Already exists class: %s', $classInfo->getFQSEN());
     }
 
-    $this->classes[$classInfo->fqsen] = $classInfo;
+    $this->classes[$classInfo->getFQSEN()] = $classInfo;
     return $this;
   }
 
@@ -69,9 +81,9 @@ class CodeGenerator
       return;
     }
 
-    $rdi = new RecursiveDirectoryIterator(realpath($path));
+    $rdi = new \RecursiveDirectoryIterator(realpath($path));
 
-    $iterator = new RecursiveIteratorIterator($rdi);
+    $iterator = new \RecursiveIteratorIterator($rdi);
     $iterator->setMaxDepth($recursive ? -1 : 0);
 
     foreach ($iterator as $file)
@@ -85,7 +97,8 @@ class CodeGenerator
   
   public function AddDriver(IDriver $driver)
   {    
-    $this->drivers[] = $driver->includeGenerator($this);
+    $driver->includeGenerator($this);
+    $this->drivers[] = $driver;
     return $this;
   }
   
@@ -94,6 +107,64 @@ class CodeGenerator
     $this->registratedParams[] = $param;
     return $this;
   }
+  
+  public function GenAllOutput()
+  {
+    foreach($this->drivers as $driver)
+    {     
+      $driver->GenOutput();
+    }    
+
+    return $this;
+  }
+
+  private function collectTags($docBlock, $element)
+  {
+    foreach($docBlock->getTags() as $tag)
+    {
+      if (in_array($tag->getName(), $this->registratedParams))
+      {
+        $element->addAttribute($tag->getName(), $tag->getDescription());
+      }
+    }        
+  }
+  
+  /**
+   * 
+   * @return \samuferenc\CodeGenerator\CodeGenerator
+   */
+  public function CollectElements()
+  {
+    foreach($this->classes as $class)
+    {
+      require $class->getFilename();
+      $refClass = new \ReflectionClass($class->getFQSEN());
+      
+      $this->collectTags(new DocBlock($refClass->getDocComment()), $class);      
+      
+      // Collect properties
+      foreach($refClass->getProperties(\ReflectionProperty::IS_PUBLIC) as $property)
+      {
+        $element = Element::Factory(Type::PropertyElement, $property->getName());
+        
+        $this->collectTags(new DocBlock($property->getDocComment()), $element);      
+       
+        $class->addChildElement($element);
+      }   
+      
+      // Collect methods
+      foreach($refClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method)
+      {
+        $element = Element::Factory(Type::MethodElement, $method->getShortName());
+        
+        $this->collectTags(new DocBlock($method->getDocComment()), $element);              
+        
+        $class->addChildElement($element);
+      }   
+    }
+    return $this;
+  }
+  
 }
 
 ?>

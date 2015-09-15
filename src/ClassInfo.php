@@ -4,85 +4,75 @@ namespace samuferenc\CodeGenerator;
 
 use samuferenc\CodeGenerator\PHPParser;
 use samuferenc\CodeGenerator\Log;
+use samuferenc\CodeGenerator\Element\Element;
+use samuferenc\CodeGenerator\Element\Type;
 
 /**
  * Description of ClassInfo
  *
  * @author virtual
  */
-class ClassInfo
+class ClassInfo extends Element
 {
-  private $filename;
-  
-  private $classname;
-
-  /**
-   * Fully Qualified Structural Element Name
-   * 
-   * @var string 
-   */
-  private $fqsen;
-  
-  private $namespace;
-  
-  private $params = array();
+  const FQSEN = '__FQSEN__';
+  const NS = '__NAMESPACE__';
+  const FILENAME = '__FILENAME__';
   
   public function getFilename()
   {
-    return $this->filename;
+    return $this->getAttribute(self::FILENAME);
+  }
+  
+  public function setFilename($value)
+  {
+    $this->addAttribute(self::FILENAME, $value);
+    return $this;    
   }
   
   public function getClassname()
   {
-    return $this->classname;
+    return $this->name;
+  }
+  
+  public function setClassname($value)
+  {
+    $this->name = $value;
+    return $this;    
   }
 
   public function getFQSEN()
   {
-    return $this->fqsen;
+    return $this->getAttribute(self::FQSEN);
+  }
+  
+  public function setFQSEN($value)
+  {
+    $this->addAttribute(self::FQSEN, $value);
+    return $this;
   }
   
   public function getNamespace()
   {
-    return $this->namespace;    
+    return $this->getAttribute(self::NS);    
   }
   
-  /**
-   * Get driver specific value
-   * 
-   * @param string $name
-   * @return null
-   */
-  public function getParam($name)
+  public function setNamespace($value)
   {
-    if(isset($this->params[$name]))
-    {
-      return $this->params[$name];
-    }
-    
-    return null;
-  }
-  
-  /**
-   * Set driver specific value
-   * 
-   * @param type $name
-   * @param type $value
-   */
-  public function setParam($name, $value)
-  {
-    $this->params[$name] = $value;
+    $this->addAttribute(self::NS, rtrim($value, "\\"));    
+    return $this;    
   }
   
   public function __construct($filename, $classname, $namespace = "\\")
   {
-    $this->filename = $filename;
-    $this->classname = $classname;
-    $this->namespace = $namespace;
-    $this->fqsen = sprintf('%s\%s', rtrim($classInfo->namespace, "\\"), $classInfo->classname);
+    $this
+            ->setFilename($filename)
+            ->setClassname($classname)
+            ->setNamespace($namespace)
+            ->setFQSEN(sprintf('%s\%s', $this->getNamespace(), $this->getClassname()))
+            ->setType(Type::ClassElement);
   }
 
-  public static function Factory($filename)
+  public static function FactoryByFilename($filename)
   {
     $parser = new PHPParser($filename);
 

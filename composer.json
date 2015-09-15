@@ -1,15 +1,17 @@
 {
-    "name":    "samuferenc/codegenerator",
-    "authors": [
-        {
-            "name": "Ferenc Samu",
-            "email": "samu.ferenc.79@gmail.com"
-        }
-    ],
-	"autoload": {
-        "psr-4": {"samuferenc\\CodeGenerator\\": ["src/"]}
-    },
-	"require": {
-	    "phpdocumentor/reflection-docblock": "2.0.4"
-	}
+  "name": "samuferenc/codegenerator",
+  "authors": [
+    {
+      "name": "Ferenc Samu",
+      "email": "samu.ferenc.79@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "samuferenc\\CodeGenerator\\": ["src/"]
+    }
+  },
+  "require": {
+    "phpdocumentor/reflection-docblock": "2.0.4"
+  }
 }
