@@ -32,6 +32,7 @@ class Log
    */
   public static function Info($message, $params)
   {
+    return;
     self::prepareMessage(func_get_args(), $message);
     self::Debug($message, self::Info);
   }  

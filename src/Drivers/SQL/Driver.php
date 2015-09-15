@@ -14,6 +14,8 @@ use samuferenc\CodeGenerator\Element\Type;
 class Driver extends BaseDriver
 {
   const Column = "Column";
+  
+  private $tables;
 
   public function includeGenerator(CodeGenerator $codeGenerator)
   {
@@ -36,7 +38,7 @@ class Driver extends BaseDriver
   
   public function GenOutput()
   {
-    $tables = array();
+    $this->tables = array();
     foreach($this->codeGenerator->getClasses() as $class)
     {
       $columns = array();
@@ -58,9 +60,13 @@ class Driver extends BaseDriver
         }
         
         if (count($columns) > 0)
-          $tables[$class->getName()] = array("name" => $class->getName(), "columns" => $columns);        
+          $this->tables[$class->getName()] = array("name" => $class->getName(), "columns" => $columns);        
       }
     }
 
+    $smarty = new \Smarty();
+    // $smarty->caching = false;
+    $smarty->assign("tables", $this->tables);
+    $smarty->display(__DIR__ . '/database.tpl');
   }
 }

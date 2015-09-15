@@ -12,6 +12,7 @@
     }
   },
   "require": {
-    "phpdocumentor/reflection-docblock": "2.0.4"
+    "phpdocumentor/reflection-docblock": "2.0.4",
+    "smarty/smarty": "~3.1"
   }
 }
