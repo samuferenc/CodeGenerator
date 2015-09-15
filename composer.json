@@ -6,10 +6,7 @@
             "email": "samu.ferenc.79@gmail.com"
         }
     ],
-	"repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/samuferenc/codegenerator"
-        } 
-    ]
+	"autoload": {
+        "psr-4": {"samuferenc\\CodeGenerator\\": ["src/"]}
+    }
 }
